@@ -102,15 +102,15 @@
     <span class="close-modal" onclick="closeModal('create-milestone')">&times;</span>
     <h2>Create new milestone</h2>
     <div>
-        <div class="milestone-input">
+        <div class="input">
             <label for="milestone-title"><b>Title</b></label>
             <input name="milestone-title">
         </div>
-        <div class="milestone-input">
+        <div class="input">
             <label for="milestone-description"><b>Description</b></label>
             <input name="milestone-description">
         </div>
-        <div class="milestone-input">
+        <div class="input">
             <label for="milestoneDeadline"><b>Milestone deadline</b></label>
             <input name="milestoneDeadline" placeholder="2023-05-19">
         </div>
@@ -216,8 +216,10 @@
         .then(response => {
             if (response.ok) {
                 alert('Project was created succesfully');
+                closeModal('create-project');
             } else {
                 alert('Project wasn\'t created');
+                closeModal('create-project');
             }
         })
         .catch(error => {
@@ -230,7 +232,7 @@
             project: projectId,
             title: document.getElementsByName('milestone-title')[0].value,
             description: document.getElementsByName('milestone-description')[0].value,
-            milestoneDeadline: document.getElementsByName('milestone-milestoneDeadline')[0].value
+            milestoneDeadline: document.getElementsByName('milestoneDeadline')[0].value
         }
 
         fetch('http://localhost:8000/project/milestones/create', {
@@ -243,8 +245,10 @@
         .then(response => {
             if (response.ok) {
                 alert('Milestone was created succesfully');
+                closeModal('create-milestone');
             } else {
                 alert('Milestone wasn\'t created');
+                closeModal('create-milestone');
             }
         })
         .catch(error => {
