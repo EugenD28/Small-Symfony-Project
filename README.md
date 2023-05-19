@@ -31,11 +31,13 @@ $ php bin/console doctrine:database:create
 $ php bin/console doctrine:migration:migrate 
 ```
 and input `no` in command line.
+
 6. After is needed to execute command to create with random data some users, projects and milestones
 ```bash 
 $ php bin/console doctrine:fixtures:load
 ```
 and input `yes` in command line.
+
 Usage
 -----
 
