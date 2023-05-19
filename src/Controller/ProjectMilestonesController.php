@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProjectMilestonesController extends AbstractController
 {
-    #[Route('/milestones/{id}', name: 'milestone')]
+    #[Route('/milestones/{id}', name: 'milestone', methods: ['GET'])]
     public function getUserInfo($id, ProjectMilestonesRepository $projectMilestonesRepository)
     {
         $milestone = $projectMilestonesRepository->find($id);

@@ -58,13 +58,25 @@ class ProjectController extends AbstractController
 
         $projectCollection = array();
 
-        foreach($projects as $project) {            
+        foreach($projects as $project) {
+            $milestones = array();
+            $milestonesData = $project->getProjectMilestones();
+
+            foreach($milestonesData as $milestone) {
+                $milestones[] = array(
+                    'title' => $milestone->getTitle(),
+                    'description' => $milestone->getDescription(),
+                    'deadline' => $milestone->getMilestoneDeadline()->format('Y-m-d')
+                );
+            }
+
+
             $projectCollection[] = array(
                 'id' => $project->getId(),
-                'user' => $project->getUser()->getName(),
+                'user' => $project->getUser() ? $project->getUser()->getName() : 'No assign',
                 'title' => $project->getTitle(),
                 'description' => $project->getDescription(),
-                'milestones' => $project->getProjectMilestones()
+                'milestones' => $milestones
             );
         }
 
