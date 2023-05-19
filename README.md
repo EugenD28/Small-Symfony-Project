@@ -17,7 +17,7 @@ on your computer to run these commands:
 
 ```bash
 $ git clone https://github.com/EugenD28/Small-Symfony-Project.git
-$ cd project/
+$ cd Small-Symfony-Project/
 $ composer install
 ```
 
@@ -29,8 +29,8 @@ Usage
 [Download Symfony CLI][4] and run this command:
 
 ```bash
-$ cd project/
-$ symfony serve
+$ cd Small-Symfony-Project/
+$ symfony server:start
 ```
 
 Then access the application in your browser at the given URL (<https://localhost:8000> by default).
