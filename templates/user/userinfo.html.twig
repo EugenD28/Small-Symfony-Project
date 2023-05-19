@@ -8,6 +8,47 @@
     tr, td {
         border: 1px solid black;
     }
+
+    .create-milestone {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .create-milestone-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+
+    .close-modal {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close-modal:hover,
+    .close-modal:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .milestone-input {
+        width: 350px;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
 </style>
 
 <table>
@@ -30,27 +71,109 @@
         <td>{{ project.description }}</a></td>
         <td>
             {% for milestone in project.projectMilestones %}
-                <a href="/milestones/{{ milestone.id }}">{{ milestone.title }}</a> <br>
+                <div style="display: flex; justify-content: space-between"><a href="/milestones/{{ milestone.id }}">{{ milestone.title }}</a> <button onclick="deleteMilestone({{ milestone.id }})">Del</button></div> <br>
             {% endfor %}
+            <hr>
+            <button onclick="openModal()">Create milestone</button>
         </td>
         <td>
-            <button class="delete-button" onclick="deleteUser({{ user.id }})">Delete</button>
+            <button class="delete-button" onclick="deleteProject({{ project.id }})">Delete</button>
         </td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
 
+<div id="create-milestone" class="create-milestone">
+  <div class="create-milestone-content">
+    <span class="close-modal" onclick="closeModal()">&times;</span>
+    <h2>Create new milestone</h2>
+    <div>
+        <div class="milestone-input">
+            <label for="title"><b>Title</b></label>
+            <input name="title">
+        </div>
+        <div class="milestone-input">
+            <label for="description"><b>Description</b></label>
+            <input name="description">
+        </div>
+        <div class="milestone-input">
+            <label for="milestoneDeadline"><b>Milestone deadline</b></label>
+            <input name="milestoneDeadline" placeholder="2023-05-19">
+        </div>
+    </div>
+    <button onclick="createMilestone()">
+        Create milestone
+    </button>
+  </div>
+</div>
+
 <script>
-    function deleteUser(id){
-        fetch('http://localhost:8000/users/' + id, {
+    const modal = document.querySelector('#create-milestone');    
+
+    document.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    });
+
+    function openModal() {
+        modal.style.display = 'block';
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+
+    function deleteProject(id){
+        fetch('http://localhost:8000/project/' + id, {
             method: 'DELETE',
         })
         .then(response => {
             if (response.ok) {
-                alert('User was deleted succesfully');
+                alert('Project was deleted succesfully');
             } else {
-                alert('User wasn\'t deleted');
+                alert('Project wasn\'t deleted');
+            }
+        })
+        .catch(error => {
+            alert(error);
+        });
+    }
+
+    function deleteMilestone(id){
+        fetch('http://localhost:8000/project/milestones/' + id, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Milestone was deleted succesfully');
+            } else {
+                alert('Milestone wasn\'t deleted');
+            }
+        })
+        .catch(error => {
+            alert(error);
+        });
+    }
+
+    function createMilestone(){
+        const milestone = {
+            title: document.getElementsByName('title')[0].value,
+            description: document.getElementsByName('description')[0].value,
+            milestoneDeadline: document.getElementsByName('milestoneDeadline')[0].value
+        }
+
+        fetch('http://localhost:8000/project/milestone', {
+            method: 'POST',
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Milestone was created succesfully');
+            } else {
+                alert('Milestone wasn\'t created');
             }
         })
         .catch(error => {
