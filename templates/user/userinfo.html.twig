@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ user.name }} projects {% endblock %}
+
+{% block body %}
+
+<style>
+    tr, td {
+        border: 1px solid black;
+    }
+</style>
+
+<table>
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>User</th>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Milestones</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for project in user.projects %}
+      <tr>
+        <td>{{ project.id }}</td>
+        <td>{{ user.name }}</td>
+        <td>{{ project.title }}</a></td>
+        <td>{{ project.description }}</a></td>
+        <td>
+            {% for milestone in project.projectMilestones %}
+                <a href="/milestones/{{ milestone.id }}">{{ milestone.title }}</a> <br>
+            {% endfor %}
+        </td>
+        <td>
+            <button class="delete-button" onclick="deleteUser({{ user.id }})">Delete</button>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+    function deleteUser(id){
+        fetch('http://localhost:8000/users/' + id, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('User was deleted succesfully');
+            } else {
+                alert('User wasn\'t deleted');
+            }
+        })
+        .catch(error => {
+            alert(error);
+        });
+    }
+</script>
+
+{% endblock %}

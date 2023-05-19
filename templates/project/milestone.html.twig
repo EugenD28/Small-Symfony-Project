@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ milestone.title }} projects {% endblock %}
+
+{% block body %}
+
+<style>
+    tr, td {
+        border: 1px solid black;
+    }
+</style>
+
+
+<div>
+  <div>
+    <p><b>ID</b></p>
+    <p>{{milestone.id}}</p>
+  </div>
+  <div>
+    <p><b>Title</b></p>
+    <p>{{milestone.title}}</p>
+  </div>
+  <div>
+    <p><b>Description</b></p>
+    <p>{{milestone.description}}</p>
+  </div>
+  <div>
+    <p><b>Milestone deadline</b></p>
+    <p>{{milestone.milestoneDeadline}}</p>
+  </div>
+</div>
+
+<script>
+    function deleteUser(id){
+        fetch('http://localhost:8000/users/' + id, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('User was deleted succesfully');
+            } else {
+                alert('User wasn\'t deleted');
+            }
+        })
+        .catch(error => {
+            alert(error);
+        });
+    }
+</script>
+
+{% endblock %}
