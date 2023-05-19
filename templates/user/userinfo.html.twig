@@ -74,7 +74,7 @@
                 <div style="display: flex; justify-content: space-between"><a href="/milestones/{{ milestone.id }}">{{ milestone.title }}</a> <button onclick="deleteMilestone({{ milestone.id }})">Del</button></div> <br>
             {% endfor %}
             <hr>
-            <button onclick="openModal()">Create milestone</button>
+            <button onclick="openModal({{project.id}})">Create milestone</button>
         </td>
         <td>
             <button class="delete-button" onclick="deleteProject({{ project.id }})">Delete</button>
@@ -109,7 +109,8 @@
 </div>
 
 <script>
-    const modal = document.querySelector('#create-milestone');    
+    const modal = document.querySelector('#create-milestone');
+    let projectId;    
 
     document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('click', function(event) {
@@ -119,7 +120,8 @@
         });
     });
 
-    function openModal() {
+    function openModal(id) {
+        projectId = id;
         modal.style.display = 'block';
     }
 
@@ -128,7 +130,7 @@
     }
 
     function deleteProject(id){
-        fetch('http://localhost:8000/project/' + id, {
+        fetch('http://localhost:8000/projects/' + id, {
             method: 'DELETE',
         })
         .then(response => {
@@ -161,13 +163,18 @@
 
     function createMilestone(){
         const milestone = {
+            project: projectId,
             title: document.getElementsByName('title')[0].value,
             description: document.getElementsByName('description')[0].value,
             milestoneDeadline: document.getElementsByName('milestoneDeadline')[0].value
         }
 
-        fetch('http://localhost:8000/project/milestone', {
+        fetch('http://localhost:8000/project/milestones/create', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(milestone)
         })
         .then(response => {
             if (response.ok) {
