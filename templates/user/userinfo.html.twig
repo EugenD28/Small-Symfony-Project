@@ -9,7 +9,7 @@
         border: 1px solid black;
     }
 
-    .create-milestone {
+    .modal {
         display: none;
         position: fixed;
         z-index: 1;
@@ -21,7 +21,7 @@
         background-color: rgba(0, 0, 0, 0.5);
     }
 
-    .create-milestone-content {
+    .modal-content {
         background-color: #fefefe;
         margin: 15% auto;
         padding: 20px;
@@ -43,11 +43,21 @@
         cursor: pointer;
     }
 
-    .milestone-input {
+    .input {
         width: 350px;
         display: flex;
         justify-content: space-between;
         margin-bottom: 20px;
+    }
+
+    .create-project {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+
+        @media(min-width: 1400px) {
+            width: 1405px;
+        }
     }
 </style>
 
@@ -74,7 +84,7 @@
                 <div style="display: flex; justify-content: space-between"><a href="/milestones/{{ milestone.id }}">{{ milestone.title }}</a> <button onclick="deleteMilestone({{ milestone.id }})">Del</button></div> <br>
             {% endfor %}
             <hr>
-            <button onclick="openModal({{project.id}})">Create milestone</button>
+            <button onclick="openModal({{project.id}}, 'create-milestone')">Create milestone</button>
         </td>
         <td>
             <button class="delete-button" onclick="deleteProject({{ project.id }})">Delete</button>
@@ -83,19 +93,22 @@
     {% endfor %}
   </tbody>
 </table>
+<div class="create-project">
+    <button onclick="openModal(null, 'create-project')">Create project</button>
+</div>
 
-<div id="create-milestone" class="create-milestone">
-  <div class="create-milestone-content">
-    <span class="close-modal" onclick="closeModal()">&times;</span>
+<div id="create-milestone" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeModal('create-milestone')">&times;</span>
     <h2>Create new milestone</h2>
     <div>
         <div class="milestone-input">
-            <label for="title"><b>Title</b></label>
-            <input name="title">
+            <label for="milestone-title"><b>Title</b></label>
+            <input name="milestone-title">
         </div>
         <div class="milestone-input">
-            <label for="description"><b>Description</b></label>
-            <input name="description">
+            <label for="milestone-description"><b>Description</b></label>
+            <input name="milestone-description">
         </div>
         <div class="milestone-input">
             <label for="milestoneDeadline"><b>Milestone deadline</b></label>
@@ -108,24 +121,49 @@
   </div>
 </div>
 
+<div id="create-project" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeModal('create-project')">&times;</span>
+    <h2>Create new project</h2>
+    <div>
+        <div class="input">
+            <label for="project-title"><b>Title</b></label>
+            <input name="project-title">
+        </div>
+        <div class="input">
+            <label for="project-description"><b>Description</b></label>
+            <input name="project-description">
+        </div>
+    </div>
+    <button onclick="createProject()">
+        Create project
+    </button>
+  </div>
+</div>
+
 <script>
-    const modal = document.querySelector('#create-milestone');
+    const milestoneModal = document.querySelector('#create-milestone');
+    const projectModal = document.querySelector('#create-project');
     let projectId;    
 
     document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('click', function(event) {
-            if (event.target === modal) {
-                modal.style.display = 'none';
+            if (event.target === milestoneModal) {
+                milestoneModal.style.display = 'none';
+            } else if (event.target === projectModal) {
+                projectModal.style.display = 'none';
             }
         });
     });
 
-    function openModal(id) {
+    function openModal(id, modalName) {
+        const modal = document.querySelector('#'+modalName);
         projectId = id;
         modal.style.display = 'block';
     }
 
-    function closeModal() {
+    function closeModal(modalName) {
+        const modal = document.querySelector('#'+modalName);
         modal.style.display = 'none';
     }
 
@@ -161,12 +199,38 @@
         });
     }
 
+    function createProject(){
+        const milestone = {
+            user: {{ user.id }},
+            title: document.getElementsByName('project-title')[0].value,
+            description: document.getElementsByName('project-description')[0].value
+        }
+
+        fetch('http://localhost:8000/projects/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(milestone)
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Project was created succesfully');
+            } else {
+                alert('Project wasn\'t created');
+            }
+        })
+        .catch(error => {
+            alert(error);
+        });
+    }
+
     function createMilestone(){
         const milestone = {
             project: projectId,
-            title: document.getElementsByName('title')[0].value,
-            description: document.getElementsByName('description')[0].value,
-            milestoneDeadline: document.getElementsByName('milestoneDeadline')[0].value
+            title: document.getElementsByName('milestone-title')[0].value,
+            description: document.getElementsByName('milestone-description')[0].value,
+            milestoneDeadline: document.getElementsByName('milestone-milestoneDeadline')[0].value
         }
 
         fetch('http://localhost:8000/project/milestones/create', {
